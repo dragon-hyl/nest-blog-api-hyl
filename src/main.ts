@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { Logger } from '@nestjs/common';
+import { ResponseInterceptor } from '@/common/interceptors/response/response.interceptor';
+import { HttpExceptionFilter } from '@/common/filters/http-exception/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,6 +19,16 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, option);
   SwaggerModule.setup(`${PREFIX}`, app, document);
+
+  /**
+   * 注册全局响应拦截器
+   */
+  app.useGlobalInterceptors(new ResponseInterceptor());
+
+  /**
+   * 注册全局异常拦截器
+   */
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   await app.listen(3000, () => {
     Logger.log(`服务已经启动，Api文档请访问http://www.localhost:3000${PREFIX}`);
