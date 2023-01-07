@@ -16,6 +16,14 @@ async function bootstrap() {
   const option = new DocumentBuilder()
     .setTitle('博客系统API文档')
     .setVersion('1.0')
+    .addBasicAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'jwt',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, option);
   SwaggerModule.setup(`${PREFIX}`, app, document);
